@@ -1,4 +1,4 @@
-module github.com/costela/contextflight
+module github.com/exaring/contextflight
 
 go 1.16
 
