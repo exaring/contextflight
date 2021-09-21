@@ -22,8 +22,29 @@ func TestSimpleDoCall(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	res, err, _ := g.Do(ctx, "test", func(_ context.Context) (interface{}, error) {
-		return "foo", nil
+	res, err, _ := g.Do(ctx, "test", func(ctx context.Context) (interface{}, error) {
+		return "foo", ctx.Err()
+	})
+
+	require.NoError(t, err)
+	assert.Equal(t, "foo", res)
+}
+
+func TestSerialDoCallsForSameKey(t *testing.T) {
+	g := Group{}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	res, err, _ := g.Do(ctx, "test", func(ctx context.Context) (interface{}, error) {
+		return "foo", ctx.Err()
+	})
+
+	require.NoError(t, err)
+	assert.Equal(t, "foo", res)
+
+	res, err, _ = g.Do(ctx, "test", func(ctx context.Context) (interface{}, error) {
+		return "foo", ctx.Err()
 	})
 
 	require.NoError(t, err)
@@ -42,11 +63,11 @@ func TestTwoDoCalls(t *testing.T) {
 		finish        = sync.WaitGroup{}
 	)
 
-	f := func(_ context.Context) (interface{}, error) {
+	f := func(ctx context.Context) (interface{}, error) {
 		time.Sleep(100 * time.Millisecond)
 		atomic.AddUint64(&calls, 1)
 
-		return "foo", nil
+		return "foo", ctx.Err()
 	}
 
 	start.Add(1)

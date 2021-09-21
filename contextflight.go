@@ -49,6 +49,7 @@ func (g *Group) Do(ctx context.Context, key string, fn func(context.Context) (in
 
 	return g.sf.Do(key, func() (interface{}, error) {
 		defer kc.cancel()
+		defer g.deleteKeyContext(key)
 
 		return fn(kc.ctx)
 	})
@@ -77,6 +78,7 @@ func (g *Group) DoChan(ctx context.Context, key string, fn func(context.Context)
 
 	return convertResultChan(g.sf.DoChan(key, func() (interface{}, error) {
 		defer kc.cancel()
+		defer g.deleteKeyContext(key)
 
 		return fn(kc.ctx)
 	}))
@@ -88,6 +90,7 @@ func (g *Group) Forget(key string) {
 	g.sf.Forget(key)
 }
 
+// getKeyContext returns a key-specific context
 func (g *Group) getKeyContext(key string) *keyContext {
 	g.kcsMu.Lock()
 	defer g.kcsMu.Unlock()
@@ -111,6 +114,14 @@ func (g *Group) getKeyContext(key string) *keyContext {
 	}
 
 	return kc
+}
+
+// deleteKeyContext removes the context identified by key from the group.
+func (g *Group) deleteKeyContext(key string) {
+	g.kcsMu.Lock()
+	defer g.kcsMu.Unlock()
+
+	delete(g.kcs, key)
 }
 
 func convertResultChan(in <-chan singleflight.Result) <-chan Result {
