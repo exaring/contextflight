@@ -9,9 +9,9 @@ on:
     branches:
       - main
 jobs:
-  setup:
-    name: Setup ${{ matrix.go }}
+  test:
     runs-on: ubuntu-latest
+    name: Test ${{ matrix.go }}
     strategy:
       matrix:
         go: [ '1.16', '1.17' ]
@@ -20,17 +20,11 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
-  test:
-    runs-on: ubuntu-latest
-    needs: setup
-    name: Test
-    steps:
       - run: go vet ./...
       - run: go test -v ./...
   lint:
     name: golangci-lint
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
@@ -40,6 +34,3 @@ jobs:
 
           # Optional: show only new issues if it's a pull request. The default value is `false`.
           only-new-issues: true
-
-          # Optional: if set to true then the action will use pre-installed Go.
-          skip-go-installation: true
