@@ -1,4 +1,4 @@
-name: golang
+name: CI # shown in workflow badge
 on:
   push:
     tags:

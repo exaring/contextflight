@@ -1,3 +1,6 @@
+![CI status](https://github.com/exaring/contextflight/actions/workflows/go.yml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/exaring/contextflight)](https://goreportcard.com/report/github.com/exaring/contextflight)
+
 # contextflight
 
 `contextflight` is a thin wrapper around [singleflight](https://pkg.go.dev/golang.org/x/sync/singleflight) that adds
