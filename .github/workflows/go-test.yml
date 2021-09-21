@@ -1,4 +1,4 @@
-name: golangci-lint
+name: go-test
 on:
   push:
     tags:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.16', '1.17' ]
-    name: Go ${{ matrix.go }} sample
+    name: Go ${{ matrix.go }} test
     steps:
       - uses: actions/checkout@v2
       - name: Setup go
